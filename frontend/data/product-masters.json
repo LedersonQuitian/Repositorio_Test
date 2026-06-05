@@ -1,0 +1,114 @@
+[
+  {
+    "id": "pm-001",
+    "name": "Vaso Bagazo Eco",
+    "description": "Vaso ecológico hecho de bagazo de caña. Ideal para bebidas frías y calientes. Material 100% biodegradable.",
+    "category": "Bebidas",
+    "media": {
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Vaso+Bagazo",
+      "thumbnailUrl": "https://via.placeholder.com/100x100?text=Bagazo",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Vaso+Bagazo+Mobile",
+      "galleryUrls": [
+        "https://via.placeholder.com/400x300?text=Bagazo+Frente",
+        "https://via.placeholder.com/400x300?text=Bagazo+Lado"
+      ]
+    },
+    "managedAttributes": {
+      "material": "Bagazo",
+      "sector": "Alimentos y Bebidas",
+      "application": "Bebidas",
+      "productType": "Vaso"
+    },
+    "skuIds": ["sku-001", "sku-002", "sku-003", "sku-004"],
+    "status": "published"
+  },
+  {
+    "id": "pm-002",
+    "name": "Vaso Plástico Reutilizable",
+    "description": "Vaso plástico resistente y reutilizable. Perfecto para oficinas y eventos. Fácil de limpiar y transportar.",
+    "category": "Bebidas",
+    "media": {
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Vaso+Plastico",
+      "thumbnailUrl": "https://via.placeholder.com/100x100?text=Plastico",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Vaso+Plastico+Mobile",
+      "galleryUrls": [
+        "https://via.placeholder.com/400x300?text=Plastico+Frente",
+        "https://via.placeholder.com/400x300?text=Plastico+Lado"
+      ]
+    },
+    "managedAttributes": {
+      "material": "Plástico",
+      "sector": "Alimentos y Bebidas",
+      "application": "Bebidas",
+      "productType": "Vaso"
+    },
+    "skuIds": ["sku-005", "sku-006", "sku-007", "sku-008"],
+    "status": "published"
+  },
+  {
+    "id": "pm-003",
+    "name": "Botella Acero Inoxidable",
+    "description": "Botella de acero inoxidable premium. Mantiene temperaturas por hasta 24 horas. Ideal para deportes y viajes.",
+    "category": "Bebidas",
+    "media": {
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Botella+Metal",
+      "thumbnailUrl": "https://via.placeholder.com/100x100?text=Metal",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Botella+Metal+Mobile",
+      "galleryUrls": [
+        "https://via.placeholder.com/400x300?text=Metal+Frente",
+        "https://via.placeholder.com/400x300?text=Metal+Lado"
+      ]
+    },
+    "managedAttributes": {
+      "material": "Metal",
+      "sector": "Deportes y Recreación",
+      "application": "Hidratación",
+      "productType": "Botella"
+    },
+    "skuIds": ["sku-009", "sku-010"],
+    "status": "published"
+  },
+  {
+    "id": "pm-004",
+    "name": "Vaso Vidrio Transparente",
+    "description": "Vaso de vidrio templado de alta calidad. Apto para lavavajillas. Elegante para uso en hogar y oficina.",
+    "category": "Bebidas",
+    "media": {
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Vaso+Vidrio",
+      "thumbnailUrl": "https://via.placeholder.com/100x100?text=Vidrio",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Vaso+Vidrio+Mobile",
+      "galleryUrls": [
+        "https://via.placeholder.com/400x300?text=Vidrio+Frente",
+        "https://via.placeholder.com/400x300?text=Vidrio+Lado"
+      ]
+    },
+    "managedAttributes": {
+      "material": "Vidrio",
+      "sector": "Alimentos y Bebidas",
+      "application": "Bebidas",
+      "productType": "Vaso"
+    },
+    "skuIds": ["sku-011", "sku-012"],
+    "status": "published"
+  },
+  {
+    "id": "pm-005",
+    "name": "Conjunto Personalizado",
+    "description": "Set de vasos multipropósito. Incluye diferentes materiales para todas tus necesidades. Ideal para regalos corporativos.",
+    "category": "Sets",
+    "media": {
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Conjunto+Mix",
+      "thumbnailUrl": "https://via.placeholder.com/100x100?text=Mix",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Conjunto+Mobile",
+      "galleryUrls": []
+    },
+    "managedAttributes": {
+      "material": "Variado",
+      "sector": "Regalos Corporativos",
+      "application": "Multi-propósito",
+      "productType": "Set"
+    },
+    "skuIds": [],
+    "status": "draft"
+  }
+]

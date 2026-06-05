@@ -1,0 +1,24 @@
+{
+  "materials": [
+    { "value": "Bagazo", "label": "Bagazo" },
+    { "value": "Plástico", "label": "Plástico" },
+    { "value": "Metal", "label": "Metal" },
+    { "value": "Vidrio", "label": "Vidrio" },
+    { "value": "Variado", "label": "Variado" }
+  ],
+  "sectors": [
+    { "value": "Alimentos y Bebidas", "label": "Alimentos y Bebidas" },
+    { "value": "Deportes y Recreación", "label": "Deportes y Recreación" },
+    { "value": "Regalos Corporativos", "label": "Regalos Corporativos" }
+  ],
+  "applications": [
+    { "value": "Bebidas", "label": "Bebidas" },
+    { "value": "Hidratación", "label": "Hidratación" },
+    { "value": "Multi-propósito", "label": "Multi-propósito" }
+  ],
+  "productTypes": [
+    { "value": "Vaso", "label": "Vaso" },
+    { "value": "Botella", "label": "Botella" },
+    { "value": "Set", "label": "Set" }
+  ]
+}

@@ -1,0 +1,110 @@
+[
+  {
+    "id": "sku-001",
+    "code": "SKU-BAGAZO-NEGRO-500",
+    "attributes": {
+      "color": "Negro",
+      "size": "500ml",
+      "capacity": "500ml"
+    }
+  },
+  {
+    "id": "sku-002",
+    "code": "SKU-BAGAZO-NEGRO-1L",
+    "attributes": {
+      "color": "Negro",
+      "size": "1L",
+      "capacity": "1L"
+    }
+  },
+  {
+    "id": "sku-003",
+    "code": "SKU-BAGAZO-MARRON-500",
+    "attributes": {
+      "color": "Marrón",
+      "size": "500ml",
+      "capacity": "500ml"
+    }
+  },
+  {
+    "id": "sku-004",
+    "code": "SKU-BAGAZO-MARRON-1L",
+    "attributes": {
+      "color": "Marrón",
+      "size": "1L",
+      "capacity": "1L"
+    }
+  },
+  {
+    "id": "sku-005",
+    "code": "SKU-PLASTICO-BLANCO-250",
+    "attributes": {
+      "color": "Blanco",
+      "size": "250ml",
+      "capacity": "250ml"
+    }
+  },
+  {
+    "id": "sku-006",
+    "code": "SKU-PLASTICO-BLANCO-500",
+    "attributes": {
+      "color": "Blanco",
+      "size": "500ml",
+      "capacity": "500ml"
+    }
+  },
+  {
+    "id": "sku-007",
+    "code": "SKU-PLASTICO-AZUL-250",
+    "attributes": {
+      "color": "Azul",
+      "size": "250ml",
+      "capacity": "250ml"
+    }
+  },
+  {
+    "id": "sku-008",
+    "code": "SKU-PLASTICO-AZUL-500",
+    "attributes": {
+      "color": "Azul",
+      "size": "500ml",
+      "capacity": "500ml"
+    }
+  },
+  {
+    "id": "sku-009",
+    "code": "SKU-METAL-PLATEADO-1L",
+    "attributes": {
+      "color": "Plateado",
+      "size": "1L",
+      "capacity": "1L"
+    }
+  },
+  {
+    "id": "sku-010",
+    "code": "SKU-METAL-PLATEADO-2L",
+    "attributes": {
+      "color": "Plateado",
+      "size": "2L",
+      "capacity": "2L"
+    }
+  },
+  {
+    "id": "sku-011",
+    "code": "SKU-VIDRIO-TRANSPARENTE-500",
+    "attributes": {
+      "color": "Transparente",
+      "size": "500ml",
+      "capacity": "500ml"
+    }
+  },
+  {
+    "id": "sku-012",
+    "code": "SKU-VIDRIO-TRANSPARENTE-1L",
+    "attributes": {
+      "color": "Transparente",
+      "size": "1L",
+      "capacity": "1L"
+    }
+  }
+]
