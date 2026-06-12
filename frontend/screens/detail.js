@@ -2,9 +2,9 @@
  * screens/detail.js - Pantalla de detalle de ProductMaster
  */
 
-import { api } from '../api.js';
-import { initLayout } from '../layout.js';
-import * as components from '../components.js';
+import { api } from '../api.js?v=20260612-2';
+import { initLayout } from '../layout.js?v=20260612-2';
+import * as components from '../components.js?v=20260612-2';
 
 export async function renderDetail(productId = null) {
   const layout = await initLayout({ screenCode: 'detail', pageTitle: 'Detalle del Producto' });
@@ -114,6 +114,7 @@ export async function renderDetail(productId = null) {
           <div class="d-flex gap-2 mb-4">
             <a href="#/detail" class="btn btn-outline-secondary">← Volver</a>
             <a href="#/catalog" class="btn btn-primary">Ver catálogo</a>
+            <a href="#/admin/${product.id}" class="btn btn-warning">Editar producto</a>
           </div>
         </div>
       </div>
@@ -164,9 +165,15 @@ async function renderProductList(contentEl, layout) {
   products.forEach(product => {
     html += `
       <div class="col-md-6 col-lg-4">
-        <a href="#/detail/${product.id}" style="text-decoration: none; color: inherit;">
-          ${components.productCard(product)}
-        </a>
+        <div class="card h-100 border-0 bg-transparent">
+          <a href="#/detail/${product.id}" style="text-decoration: none; color: inherit;">
+            ${components.productCard(product)}
+          </a>
+          <div class="d-flex gap-2 mt-2">
+            <a href="#/detail/${product.id}" class="btn btn-sm btn-outline-primary">Ver detalle</a>
+            <a href="#/admin/${product.id}" class="btn btn-sm btn-warning">Editar</a>
+          </div>
+        </div>
       </div>
     `;
   });

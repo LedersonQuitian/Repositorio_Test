@@ -26,6 +26,9 @@ export async function initLayout(options = {}) {
             <a class="nav-link ${screenCode === 'detail' ? 'active' : ''}" href="#/detail">
               Detalle (Demo)
             </a>
+            <a class="nav-link ${screenCode === 'admin' ? 'active' : ''}" href="#/admin">
+              Administración
+            </a>
             <small class="text-muted d-block mt-3 mb-2">Estado:</small>
             <small id="app-status" class="text-warning">Cargando...</small>
           </div>

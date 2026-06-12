@@ -122,7 +122,9 @@ export function updateProduct(id, updates) {
     throw new Error(`Product ${id} not found`);
   }
 
-  products[idx] = { ...products[idx], ...updates };
+  // ID es inmutable una vez creado.
+  const { id: _ignoredId, ...safeUpdates } = updates || {};
+  products[idx] = { ...products[idx], ...safeUpdates, id: products[idx].id };
   saveState();
   
   return products[idx];

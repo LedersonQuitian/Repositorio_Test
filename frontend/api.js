@@ -5,10 +5,41 @@
  * Nunca se accede directamente a repository desde las pantallas.
  */
 
-import * as repo from './data/repository.js';
-import * as derive from './domain/derive.js';
-import * as filters from './domain/filters.js';
-import * as rules from './domain/rules.js';
+import * as repo from './data/repository.js?v=20260612-2';
+import * as derive from './domain/derive.js?v=20260612-2';
+import * as filters from './domain/filters.js?v=20260612-2';
+import * as rules from './domain/rules.js?v=20260612-2';
+
+function normalizeSkuIds(skuIds = []) {
+  if (!Array.isArray(skuIds)) {
+    return [];
+  }
+  return [...new Set(skuIds.filter(Boolean))];
+}
+
+function ensureSkuCardinality(skuIds = [], productIdToIgnore = null) {
+  const requestedIds = normalizeSkuIds(skuIds);
+  if (requestedIds.length === 0) {
+    return;
+  }
+
+  const ownerBySku = new Map();
+  repo.getProducts().forEach(product => {
+    if (productIdToIgnore && product.id === productIdToIgnore) {
+      return;
+    }
+
+    (product.skuIds || []).forEach(skuId => {
+      ownerBySku.set(skuId, product.id);
+    });
+  });
+
+  const conflicts = requestedIds.filter(skuId => ownerBySku.has(skuId));
+  if (conflicts.length > 0) {
+    const conflictMessages = conflicts.map(skuId => `SKU ${skuId} ya pertenece a ${ownerBySku.get(skuId)}`);
+    throw new Error(conflictMessages.join('; '));
+  }
+}
 
 export const api = {
   
@@ -84,12 +115,23 @@ export const api = {
    * Crea un nuevo ProductMaster
    */
   createProduct: (productData) => {
-    const validation = rules.validateBasic(productData);
+    const payload = {
+      ...productData,
+      skuIds: normalizeSkuIds(productData?.skuIds)
+    };
+
+    const validation = rules.validateBasic(payload);
+    const managedValidation = rules.validateManagedAttributes(payload.managedAttributes);
     if (!validation.isValid) {
       throw new Error(validation.errors.join('; '));
     }
+    if (!managedValidation.isValid) {
+      throw new Error(managedValidation.errors.join('; '));
+    }
 
-    const created = repo.createProduct(productData);
+    ensureSkuCardinality(payload.skuIds);
+
+    const created = repo.createProduct(payload);
     const skus = repo.getSkus();
     return derive.enrichProductMasterWithDeriveds(created, skus);
   },
@@ -98,7 +140,30 @@ export const api = {
    * Actualiza un ProductMaster
    */
   updateProduct: (id, updates) => {
-    const updated = repo.updateProduct(id, updates);
+    const current = repo.getProductById(id);
+    if (!current) {
+      throw new Error(`Product ${id} not found`);
+    }
+
+    const merged = {
+      ...current,
+      ...updates,
+      id: current.id,
+      skuIds: normalizeSkuIds(updates?.skuIds ?? current.skuIds)
+    };
+
+    const validation = rules.validateBasic(merged);
+    const managedValidation = rules.validateManagedAttributes(merged.managedAttributes);
+    if (!validation.isValid) {
+      throw new Error(validation.errors.join('; '));
+    }
+    if (!managedValidation.isValid) {
+      throw new Error(managedValidation.errors.join('; '));
+    }
+
+    ensureSkuCardinality(merged.skuIds, current.id);
+
+    const updated = repo.updateProduct(id, merged);
     const skus = repo.getSkus();
     return derive.enrichProductMasterWithDeriveds(updated, skus);
   },
@@ -109,6 +174,8 @@ export const api = {
   publishProduct: (id) => {
     const product = repo.getProductById(id);
     if (!product) throw new Error(`Product ${id} not found`);
+
+    ensureSkuCardinality(product.skuIds || [], id);
 
     const skus = repo.getSkus();
     const validation = rules.validatePublishable(product, skus);

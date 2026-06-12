@@ -2,9 +2,9 @@
  * screens/catalog.js - Pantalla de catálogo filtrable
  */
 
-import { api } from '../api.js';
-import { initLayout } from '../layout.js';
-import * as components from '../components.js';
+import { api } from '../api.js?v=20260612-2';
+import { initLayout } from '../layout.js?v=20260612-2';
+import * as components from '../components.js?v=20260612-2';
 
 export async function renderCatalog() {
   const layout = await initLayout({ screenCode: 'catalog', pageTitle: 'Catálogo de Productos' });
@@ -32,9 +32,12 @@ export async function renderCatalog() {
       <div class="col-md-9">
         <div class="mb-3 d-flex justify-content-between align-items-center">
           <h5>Resultados: <span id="result-count">0</span> productos</h5>
-          <button class="btn btn-sm btn-outline-secondary" id="clear-filters-btn">
-            Limpiar filtros
-          </button>
+          <div class="d-flex gap-2">
+            <a class="btn btn-sm btn-success" href="#/admin">Nuevo</a>
+            <button class="btn btn-sm btn-outline-secondary" id="clear-filters-btn">
+              Limpiar filtros
+            </button>
+          </div>
         </div>
         <div id="products-container" class="row g-3">
           ${components.loadingSpinner()}

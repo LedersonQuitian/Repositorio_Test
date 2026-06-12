@@ -2,9 +2,10 @@
  * app.js - Router y orquestación principal de la SPA
  */
 
-import { api } from './api.js';
-import { renderCatalog } from './screens/catalog.js';
-import { renderDetail } from './screens/detail.js';
+import { api } from './api.js?v=20260612-6';
+import { renderCatalog } from './screens/catalog.js?v=20260612-6';
+import { renderDetail } from './screens/detail.js?v=20260612-6';
+import { renderAdmin } from './screens/admin.js?v=20260612-6';
 
 // Estado global
 let isInitialized = false;
@@ -35,6 +36,9 @@ async function renderScreen() {
         break;
       case 'detail':
         await renderDetail(param);
+        break;
+      case 'admin':
+        await renderAdmin(param);
         break;
       default:
         // Redirigir a catalog
