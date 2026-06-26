@@ -5,10 +5,10 @@
  * Nunca se accede directamente a repository desde las pantallas.
  */
 
-import * as repo from './data/repository.js?v=20260612-2';
-import * as derive from './domain/derive.js?v=20260612-2';
-import * as filters from './domain/filters.js?v=20260612-2';
-import * as rules from './domain/rules.js?v=20260612-2';
+import * as repo from './data/repository.js?v=20260612-14';
+import * as derive from './domain/derive.js?v=20260612-14';
+import * as filters from './domain/filters.js?v=20260612-14';
+import * as rules from './domain/rules.js?v=20260612-14';
 
 function normalizeSkuIds(skuIds = []) {
   if (!Array.isArray(skuIds)) {
@@ -185,6 +185,104 @@ export const api = {
     }
 
     return repo.updateProduct(id, { status: 'published' });
+  },
+
+  /**
+   * Obtiene opciones de catálogo (atributos y sus opciones)
+   */
+  getCatalogOptions: () => {
+    return repo.getCatalogOptions();
+  },
+
+  /**
+   * Agrega una nueva opción a un atributo
+   */
+  addAttributeOption: (attributeName, optionData) => {
+    return repo.addAttributeOption(attributeName, optionData);
+  },
+
+  /**
+   * Actualiza una opción de atributo
+   */
+  updateAttributeOption: (attributeName, oldValue, newOptionData) => {
+    return repo.updateAttributeOption(attributeName, oldValue, newOptionData);
+  },
+
+  /**
+   * Elimina una opción de atributo
+   */
+  deleteAttributeOption: (attributeName, value) => {
+    return repo.deleteAttributeOption(attributeName, value);
+  },
+
+  /**
+   * Obtiene todas las categorías (array plano)
+   */
+  getAllCategories: () => {
+    return repo.getAllCategories();
+  },
+
+  /**
+   * Obtiene categorías raíz (nivel 0)
+   */
+  getRootCategories: () => {
+    return repo.getRootCategories();
+  },
+
+  /**
+   * Obtiene una categoría por ID
+   */
+  getCategoryById: (categoryId) => {
+    return repo.getCategoryById(categoryId);
+  },
+
+  /**
+   * Obtiene categorías hijas de un padre
+   */
+  getChildCategories: (parentId, level) => {
+    return repo.getChildCategories(parentId, level);
+  },
+
+  /**
+   * Obtiene categorías padres de una categoría
+   */
+  getParentCategories: (categoryId) => {
+    return repo.getParentCategories(categoryId);
+  },
+
+  /**
+   * Agrega una nueva categoría
+   */
+  addCategory: (categoryData) => {
+    return repo.addCategory(categoryData);
+  },
+
+  /**
+   * Actualiza una categoría
+   */
+  updateCategory: (categoryId, updates) => {
+    return repo.updateCategory(categoryId, updates);
+  },
+
+  /**
+   * Elimina una categoría
+   */
+  deleteCategory: (categoryId) => {
+    return repo.deleteCategory(categoryId);
+  },
+
+  /**
+   * Agrega una relación padre-hijo
+   */
+  addCategoryParent: (categoryId, parentId) => {
+    return repo.addCategoryParent(categoryId, parentId);
+  },
+
+  /**
+   * Remueve una relación padre-hijo
+   */
+  removeCategoryParent: (categoryId, parentId) => {
+    return repo.removeCategoryParent(categoryId, parentId);
   },
 
   /**

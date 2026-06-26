@@ -2,9 +2,9 @@
  * screens/detail.js - Pantalla de detalle de ProductMaster
  */
 
-import { api } from '../api.js?v=20260612-2';
-import { initLayout } from '../layout.js?v=20260612-2';
-import * as components from '../components.js?v=20260612-2';
+import { api } from '../api.js?v=20260612-14';
+import { initLayout } from '../layout.js?v=20260612-14';
+import * as components from '../components.js?v=20260612-14';
 
 export async function renderDetail(productId = null) {
   const layout = await initLayout({ screenCode: 'detail', pageTitle: 'Detalle del Producto' });
@@ -112,9 +112,8 @@ export async function renderDetail(productId = null) {
 
           <!-- Botones de acción -->
           <div class="d-flex gap-2 mb-4">
-            <a href="#/detail" class="btn btn-outline-secondary">← Volver</a>
-            <a href="#/catalog" class="btn btn-primary">Ver catálogo</a>
-            <a href="#/admin/${product.id}" class="btn btn-warning">Editar producto</a>
+            <a href="#/catalog" class="btn btn-outline-secondary">← Volver al Catálogo</a>
+            <a href="#/admin/${product.id}" class="btn btn-warning">✎ Editar</a>
           </div>
         </div>
       </div>

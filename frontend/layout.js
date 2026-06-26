@@ -5,7 +5,7 @@
  */
 
 export async function initLayout(options = {}) {
-  const { screenCode = 'home', pageTitle = 'Producto Maestro' } = options;
+  const { screenCode = 'home', pageTitle = 'Producto Maestro', productId = null } = options;
 
   // Actualizar título
   document.title = pageTitle + ' | Producto Maestro';
@@ -23,13 +23,35 @@ export async function initLayout(options = {}) {
             <a class="nav-link ${screenCode === 'catalog' ? 'active' : ''}" href="#/catalog">
               Catálogo
             </a>
-            <a class="nav-link ${screenCode === 'detail' ? 'active' : ''}" href="#/detail">
-              Detalle (Demo)
-            </a>
-            <a class="nav-link ${screenCode === 'admin' ? 'active' : ''}" href="#/admin">
-              Administración
-            </a>
-            <small class="text-muted d-block mt-3 mb-2">Estado:</small>
+            
+            <!-- Mostrar "Volver" solo cuando estés en Detalle o Admin editando un producto -->
+            ${screenCode === 'detail' ? `
+              <a class="nav-link active" href="#/catalog">
+                ← Volver
+              </a>
+            ` : ''}
+            ${screenCode === 'admin' ? `
+              <a class="nav-link active" href="#/detail/${productId}">
+                ← Volver
+              </a>
+            ` : ''}
+            
+            <!-- Administración (solo si no estás en Detalle o Admin de productos) -->
+            ${(screenCode !== 'detail' && screenCode !== 'admin') ? `
+              <hr class="my-2 border-secondary">
+              <small class="text-muted d-block mb-2">Administración:</small>
+              <a class="nav-link ${screenCode === 'create-product' ? 'active' : ''}" href="#/create-product">
+                Crear Producto
+              </a>
+              <a class="nav-link ${screenCode === 'categories' ? 'active' : ''}" href="#/categories">
+                Admin. de Categorías
+              </a>
+              <a class="nav-link ${screenCode === 'attributes' ? 'active' : ''}" href="#/attributes">
+                Admin. de Atributos
+              </a>
+            ` : ''}
+            <hr class="my-2 border-secondary">
+            <small class="text-muted d-block mb-2">Estado:</small>
             <small id="app-status" class="text-warning">Cargando...</small>
           </div>
         </div>
@@ -96,7 +118,7 @@ export async function initLayout(options = {}) {
   // Setup reset button
   document.getElementById('reset-seed-btn').addEventListener('click', async () => {
     if (confirm('¿Restaurar datos a ejemplo original?')) {
-      const { api } = await import('./api.js');
+      const { api } = await import('./api.js?v=20260612-14');
       await api.resetToSeed();
       alert('Datos restaurados. Recargando...');
       window.location.reload();

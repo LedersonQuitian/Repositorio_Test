@@ -1,19 +1,60 @@
 /**
- * screens/admin.js - Pantalla de administracion de ProductMaster
+ * screens/admin.js - Administración de atributos de ProductMasters existentes
+ * 
+ * Permite editar atributos de productos ya creados (sin crear nuevos)
  */
 
-import { api } from '../api.js?v=20260612-2';
-import { initLayout } from '../layout.js?v=20260612-2';
-import * as derive from '../domain/derive.js?v=20260612-2';
+import { api } from '../api.js?v=20260612-14';
+import { initLayout } from '../layout.js?v=20260612-14';
+import * as derive from '../domain/derive.js?v=20260612-14';
+
+function renderSelectOptions(options = []) {
+  const optionHtml = options.map(option => `<option value="${option.value}">${option.label}</option>`).join('');
+  return `<option value="">Seleccionar...</option>${optionHtml}`;
+}
+
+function renderSkuCheckboxes(skus = []) {
+  if (!Array.isArray(skus) || skus.length === 0) {
+    return '<div class="text-muted small">No hay SKUs disponibles.</div>';
+  }
+
+  return skus.map(sku => `
+    <div class="form-check">
+      <input class="form-check-input sku-checkbox" type="checkbox" id="sku-${sku.id}" value="${sku.id}">
+      <label class="form-check-label" for="sku-${sku.id}">
+        <strong>${sku.code}</strong>
+        <span class="text-muted">(${sku.attributes?.color || '-'} / ${sku.attributes?.capacity || '-'})</span>
+      </label>
+    </div>
+  `).join('');
+}
 
 export async function renderAdmin(productId = null) {
-  const layout = await initLayout({ screenCode: 'admin', pageTitle: 'Administracion de Productos' });
+  // Si no hay productId, redirigir al catálogo
+  if (!productId) {
+    window.location.hash = '#/catalog';
+    return;
+  }
+
+  const layout = await initLayout({ screenCode: 'admin', pageTitle: 'Editar Producto', productId });
   const contentEl = layout.getContentElement();
 
   const catalogOptions = api.getCatalogOptions();
   const allSkus = api.getSkus();
 
-  let selectedId = productId || null;
+  const product = api.getProductById(productId);
+  
+  if (!product) {
+    contentEl.innerHTML = `
+      <div class="alert alert-danger" role="alert">
+        Producto no encontrado
+      </div>
+      <a href="#/catalog" class="btn btn-secondary">← Volver al Catálogo</a>
+    `;
+    return;
+  }
+
+  let selectedId = productId;
 
   contentEl.innerHTML = `
     <div class="row g-4">
@@ -21,27 +62,51 @@ export async function renderAdmin(productId = null) {
         <div id="admin-alert"></div>
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0" id="form-title">Crear ProductMaster</h5>
-            <small class="text-muted" id="form-mode-badge">Modo: Crear</small>
+            <h5 class="mb-0">Editar: ${product.name}</h5>
+            <small class="text-muted">${product.id}</small>
           </div>
           <div class="card-body">
             <form id="admin-form" class="row g-3">
-              <div class="col-12">
-                <label class="form-label">ID</label>
-                <input type="text" class="form-control" id="f-id" disabled placeholder="Se genera automaticamente">
-              </div>
-
               <div class="col-md-8">
                 <label class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="f-name" required>
+                <input type="text" class="form-control" id="f-name" disabled>
               </div>
               <div class="col-md-4">
-                <label class="form-label">Categoria</label>
-                <input type="text" class="form-control" id="f-category" placeholder="Ej: Bebidas">
+                <label class="form-label">ID</label>
+                <input type="text" class="form-control" id="f-id" disabled>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Categoría Principal</label>
+                <select class="form-select category-level-0" id="f-category-level-0" data-level="0">
+                  <option value="">Seleccionar...</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Categoría Secundaria</label>
+                <select class="form-select category-level-1" id="f-category-level-1" data-level="1" disabled>
+                  <option value="">Seleccionar...</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Categoría Terciaria</label>
+                <select class="form-select category-level-2" id="f-category-level-2" data-level="2" disabled>
+                  <option value="">Seleccionar...</option>
+                </select>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Estado</label>
+                <select class="form-select" id="f-status" disabled>
+                  <option value="draft">Borrador</option>
+                  <option value="published">Publicado</option>
+                  <option value="archived">Archivado</option>
+                </select>
               </div>
 
               <div class="col-12">
-                <label class="form-label">Descripcion</label>
+                <label class="form-label">Descripción</label>
                 <textarea class="form-control" id="f-description" rows="2"></textarea>
               </div>
 
@@ -51,40 +116,19 @@ export async function renderAdmin(productId = null) {
 
               <div class="col-md-6">
                 <label class="form-label">Material</label>
-                <select class="form-select" id="f-material" required>${renderSelectOptions(catalogOptions.materials)}</select>
+                <select class="form-select" id="f-material">${renderSelectOptions(catalogOptions.materials)}</select>
               </div>
               <div class="col-md-6">
                 <label class="form-label">Sector</label>
-                <select class="form-select" id="f-sector" required>${renderSelectOptions(catalogOptions.sectors)}</select>
+                <select class="form-select" id="f-sector">${renderSelectOptions(catalogOptions.sectors)}</select>
               </div>
               <div class="col-md-6">
-                <label class="form-label">Aplicacion</label>
-                <select class="form-select" id="f-application" required>${renderSelectOptions(catalogOptions.applications)}</select>
+                <label class="form-label">Aplicación</label>
+                <select class="form-select" id="f-application">${renderSelectOptions(catalogOptions.applications)}</select>
               </div>
               <div class="col-md-6">
                 <label class="form-label">Tipo de producto</label>
-                <select class="form-select" id="f-productType" required>${renderSelectOptions(catalogOptions.productTypes)}</select>
-              </div>
-
-              <div class="col-12">
-                <h6 class="mt-2">Media</h6>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label">Main image URL</label>
-                <input type="url" class="form-control" id="f-mainImageUrl" placeholder="https://...">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Thumbnail URL</label>
-                <input type="url" class="form-control" id="f-thumbnailUrl" placeholder="https://...">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Mobile image URL</label>
-                <input type="url" class="form-control" id="f-mobileImageUrl" placeholder="https://...">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Gallery URLs (una por linea)</label>
-                <textarea class="form-control" id="f-galleryUrls" rows="2" placeholder="https://...\nhttps://..."></textarea>
+                <select class="form-select" id="f-productType">${renderSelectOptions(catalogOptions.productTypes)}</select>
               </div>
 
               <div class="col-12">
@@ -102,9 +146,9 @@ export async function renderAdmin(productId = null) {
               </div>
 
               <div class="col-12 d-flex gap-2 mt-3">
-                <button type="button" class="btn btn-outline-secondary" id="save-draft-btn">Guardar borrador</button>
-                <button type="button" class="btn btn-success" id="publish-btn">Publicar</button>
-                <button type="button" class="btn btn-light" id="clear-form-btn">Limpiar</button>
+                <button type="button" class="btn btn-primary" id="save-changes-btn">Guardar cambios</button>
+                <button type="button" class="btn btn-light" id="cancel-edit-btn">Cancelar</button>
+                <a href="#/detail/${productId}" class="btn btn-outline-secondary ms-auto">← Volver al Detalle</a>
               </div>
             </form>
           </div>
@@ -117,19 +161,15 @@ export async function renderAdmin(productId = null) {
 
   const idEl = document.getElementById('f-id');
   const nameEl = document.getElementById('f-name');
-  const categoryEl = document.getElementById('f-category');
+  const categoryLevel0El = document.getElementById('f-category-level-0');
+  const categoryLevel1El = document.getElementById('f-category-level-1');
+  const categoryLevel2El = document.getElementById('f-category-level-2');
+  const statusEl = document.getElementById('f-status');
   const descriptionEl = document.getElementById('f-description');
   const materialEl = document.getElementById('f-material');
   const sectorEl = document.getElementById('f-sector');
   const applicationEl = document.getElementById('f-application');
   const productTypeEl = document.getElementById('f-productType');
-  const mainImageUrlEl = document.getElementById('f-mainImageUrl');
-  const thumbnailUrlEl = document.getElementById('f-thumbnailUrl');
-  const mobileImageUrlEl = document.getElementById('f-mobileImageUrl');
-  const galleryUrlsEl = document.getElementById('f-galleryUrls');
-
-  const formTitleEl = document.getElementById('form-title');
-  const formModeBadgeEl = document.getElementById('form-mode-badge');
 
   function showAlert(message, type = 'danger') {
     alertEl.innerHTML = `
@@ -168,35 +208,10 @@ export async function renderAdmin(productId = null) {
     `;
   }
 
-  function clearForm() {
-    selectedId = null;
-    idEl.value = '';
-    nameEl.value = '';
-    categoryEl.value = '';
-    descriptionEl.value = '';
-    materialEl.value = '';
-    sectorEl.value = '';
-    applicationEl.value = '';
-    productTypeEl.value = '';
-    mainImageUrlEl.value = '';
-    thumbnailUrlEl.value = '';
-    mobileImageUrlEl.value = '';
-    galleryUrlsEl.value = '';
-
-    document.querySelectorAll('.sku-checkbox').forEach(cb => {
-      cb.checked = false;
-    });
-
-    formTitleEl.textContent = 'Crear ProductMaster';
-    formModeBadgeEl.textContent = 'Modo: Crear';
-
-    updateDerivedPreview();
-  }
-
   function fillForm(product) {
     idEl.value = product.id || '';
     nameEl.value = product.name || '';
-    categoryEl.value = product.category || '';
+    statusEl.value = product.status || 'draft';
     descriptionEl.value = product.description || '';
 
     materialEl.value = product.managedAttributes?.material || '';
@@ -204,146 +219,164 @@ export async function renderAdmin(productId = null) {
     applicationEl.value = product.managedAttributes?.application || '';
     productTypeEl.value = product.managedAttributes?.productType || '';
 
-    mainImageUrlEl.value = product.media?.mainImageUrl || '';
-    thumbnailUrlEl.value = product.media?.thumbnailUrl || '';
-    mobileImageUrlEl.value = product.media?.mobileImageUrl || '';
-    galleryUrlsEl.value = (product.media?.galleryUrls || []).join('\n');
+    // Cargar categoría jerárquica
+    const categoryId = product.categoryId;
+    loadCategoryHierarchy(categoryId);
 
     const selectedSkuIds = new Set(product.skuIds || []);
     document.querySelectorAll('.sku-checkbox').forEach(cb => {
       cb.checked = selectedSkuIds.has(cb.value);
     });
 
-    formTitleEl.textContent = `Editar ProductMaster: ${product.name}`;
-    formModeBadgeEl.textContent = 'Modo: Editar';
-
     updateDerivedPreview();
   }
 
-  function buildPayload() {
-    const galleryUrls = galleryUrlsEl.value
-      .split('\n')
-      .map(v => v.trim())
-      .filter(Boolean);
+  function loadCategoryHierarchy(selectedCategoryId) {
+    const allRoots = api.getRootCategories();
 
-    return {
-      name: nameEl.value.trim(),
-      description: descriptionEl.value.trim(),
-      category: categoryEl.value.trim(),
-      managedAttributes: {
-        material: materialEl.value,
-        sector: sectorEl.value,
-        application: applicationEl.value,
-        productType: productTypeEl.value
-      },
-      media: {
-        mainImageUrl: mainImageUrlEl.value.trim(),
-        thumbnailUrl: thumbnailUrlEl.value.trim(),
-        mobileImageUrl: mobileImageUrlEl.value.trim(),
-        galleryUrls
-      },
-      skuIds: getSelectedSkuIds()
-    };
-  }
+    // Limpiar selectores
+    categoryLevel0El.innerHTML = '<option value="">Seleccionar...</option>';
+    categoryLevel1El.innerHTML = '<option value="">Seleccionar...</option>';
+    categoryLevel2El.innerHTML = '<option value="">Seleccionar...</option>';
+    categoryLevel1El.disabled = true;
+    categoryLevel2El.disabled = true;
 
-  function validateFormDraft() {
-    if (!nameEl.value.trim()) {
-      throw new Error('Nombre es requerido.');
+    // Cargar nivel 0 (siempre disponible)
+    categoryLevel0El.innerHTML += allRoots.map(cat => 
+      `<option value="${cat.id}">${cat.label}</option>`
+    ).join('');
+
+    if (!selectedCategoryId) return;
+
+    // Obtener la categoría seleccionada
+    const selectedCategory = api.getCategoryById(selectedCategoryId);
+    if (!selectedCategory) return;
+
+    // Cargar según el nivel
+    if (selectedCategory.level === 0) {
+      categoryLevel0El.value = selectedCategoryId;
+    } else if (selectedCategory.level === 1) {
+      // Es categoría nivel 1: cargar su padre (nivel 0) y sus hijos (nivel 2)
+      const parents = api.getParentCategories(selectedCategoryId);
+      if (parents.length > 0) {
+        const parentId = parents[0].id; // Seleccionar el primer padre
+        categoryLevel0El.value = parentId;
+        
+        // Cargar nivel 1 (hijos del padre)
+        const level1Children = api.getChildCategories(parentId, 1);
+        categoryLevel1El.innerHTML = '<option value="">Seleccionar...</option>' +
+          level1Children.map(cat => 
+            `<option value="${cat.id}" ${cat.id === selectedCategoryId ? 'selected' : ''}>${cat.label}</option>`
+          ).join('');
+        categoryLevel1El.disabled = false;
+      }
+    } else if (selectedCategory.level === 2) {
+      // Es categoría nivel 2: cargar sus padres (nivel 1) y abuelos (nivel 0)
+      const parents = api.getParentCategories(selectedCategoryId);
+      if (parents.length > 0) {
+        const parentId = parents[0].id; // Seleccionar el primer padre (nivel 1)
+        const grandparents = api.getParentCategories(parentId);
+        
+        if (grandparents.length > 0) {
+          const grandparentId = grandparents[0].id; // Seleccionar el primer abuelo (nivel 0)
+          categoryLevel0El.value = grandparentId;
+          
+          // Cargar nivel 1
+          const level1Children = api.getChildCategories(grandparentId, 1);
+          categoryLevel1El.innerHTML = '<option value="">Seleccionar...</option>' +
+            level1Children.map(cat => 
+              `<option value="${cat.id}" ${cat.id === parentId ? 'selected' : ''}>${cat.label}</option>`
+            ).join('');
+          categoryLevel1El.disabled = false;
+          
+          // Cargar nivel 2
+          const level2Children = api.getChildCategories(parentId, 2);
+          categoryLevel2El.innerHTML = '<option value="">Seleccionar...</option>' +
+            level2Children.map(cat => 
+              `<option value="${cat.id}" ${cat.id === selectedCategoryId ? 'selected' : ''}>${cat.label}</option>`
+            ).join('');
+          categoryLevel2El.disabled = false;
+        }
+      }
     }
   }
 
-  async function saveDraft() {
+  async function saveChanges() {
     clearAlert();
-    const payload = buildPayload();
-    validateFormDraft();
-
-    let saved;
-    if (selectedId) {
-      saved = api.updateProduct(selectedId, { ...payload, status: 'draft' });
-    } else {
-      saved = api.createProduct({ ...payload, status: 'draft' });
-      selectedId = saved.id;
-    }
-
-    fillForm(saved);
-    showAlert('Borrador guardado correctamente.', 'success');
-  }
-
-  async function publish() {
-    clearAlert();
-    const payload = buildPayload();
-    validateFormDraft();
-
-    let targetId = selectedId;
-
-    if (targetId) {
-      api.updateProduct(targetId, payload);
-    } else {
-      const created = api.createProduct(payload);
-      targetId = created.id;
-      selectedId = targetId;
-    }
-
-    const published = api.publishProduct(targetId);
-    fillForm(api.getProductById(published.id));
-    showAlert('Producto publicado correctamente.', 'success');
-  }
-
-  document.getElementById('clear-form-btn').addEventListener('click', () => {
-    clearAlert();
-    clearForm();
-  });
-
-  document.getElementById('save-draft-btn').addEventListener('click', async () => {
     try {
-      await saveDraft();
-    } catch (error) {
-      showAlert(error.message);
-    }
-  });
+      const payload = {
+        categoryId: categoryLevel2El.value || categoryLevel1El.value || categoryLevel0El.value || null,
+        description: descriptionEl.value.trim(),
+        managedAttributes: {
+          material: materialEl.value,
+          sector: sectorEl.value,
+          application: applicationEl.value,
+          productType: productTypeEl.value
+        },
+        skuIds: getSelectedSkuIds()
+      };
 
-  document.getElementById('publish-btn').addEventListener('click', async () => {
-    try {
-      await publish();
+      api.updateProduct(selectedId, payload);
+      showAlert('Cambios guardados correctamente', 'success');
+
+      // Recargar información del producto
+      const updated = api.getProductById(selectedId);
+      fillForm(updated);
     } catch (error) {
-      showAlert(error.message);
+      showAlert(error.message, 'danger');
     }
+  }
+
+  // Event listeners
+  document.getElementById('save-changes-btn').addEventListener('click', saveChanges);
+
+  document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+    const product = api.getProductById(selectedId);
+    fillForm(product);
+    clearAlert();
   });
 
   document.querySelectorAll('.sku-checkbox').forEach(cb => {
     cb.addEventListener('change', updateDerivedPreview);
   });
 
-  if (selectedId) {
-    const product = api.getProductById(selectedId);
-    if (product) {
-      fillForm(product);
+  // Event listeners para jerarquía de categorías
+  categoryLevel0El.addEventListener('change', function() {
+    categoryLevel1El.innerHTML = '<option value="">Seleccionar...</option>';
+    categoryLevel2El.innerHTML = '<option value="">Seleccionar...</option>';
+    categoryLevel2El.disabled = true;
+
+    if (this.value) {
+      const children = api.getChildCategories(this.value, 1);
+      if (children.length > 0) {
+        categoryLevel1El.innerHTML = '<option value="">Seleccionar...</option>' + 
+          children.map(cat => `<option value="${cat.id}">${cat.label}</option>`).join('');
+        categoryLevel1El.disabled = false;
+      } else {
+        categoryLevel1El.disabled = true;
+      }
     } else {
-      clearForm();
-      showAlert(`No se encontro el producto ${selectedId}.`, 'warning');
+      categoryLevel1El.disabled = true;
     }
-  } else {
-    clearForm();
-  }
-}
+  });
 
-function renderSelectOptions(options = []) {
-  const optionHtml = options.map(option => `<option value="${option.value}">${option.label}</option>`).join('');
-  return `<option value="">Seleccionar...</option>${optionHtml}`;
-}
+  categoryLevel1El.addEventListener('change', function() {
+    categoryLevel2El.innerHTML = '<option value="">Seleccionar...</option>';
 
-function renderSkuCheckboxes(skus = []) {
-  if (!Array.isArray(skus) || skus.length === 0) {
-    return '<div class="text-muted small">No hay SKUs disponibles.</div>';
-  }
+    if (this.value) {
+      const children = api.getChildCategories(this.value, 2);
+      if (children.length > 0) {
+        categoryLevel2El.innerHTML = '<option value="">Seleccionar...</option>' + 
+          children.map(cat => `<option value="${cat.id}">${cat.label}</option>`).join('');
+        categoryLevel2El.disabled = false;
+      } else {
+        categoryLevel2El.disabled = true;
+      }
+    } else {
+      categoryLevel2El.disabled = true;
+    }
+  });
 
-  return skus.map(sku => `
-    <div class="form-check">
-      <input class="form-check-input sku-checkbox" type="checkbox" id="sku-${sku.id}" value="${sku.id}">
-      <label class="form-check-label" for="sku-${sku.id}">
-        <strong>${sku.code}</strong>
-        <span class="text-muted">(${sku.attributes?.color || '-'} / ${sku.attributes?.capacity || '-'})</span>
-      </label>
-    </div>
-  `).join('');
+  // Inicializar formulario con el producto
+  fillForm(product);
 }

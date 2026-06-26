@@ -2,9 +2,9 @@
  * screens/catalog.js - Pantalla de catálogo filtrable
  */
 
-import { api } from '../api.js?v=20260612-2';
-import { initLayout } from '../layout.js?v=20260612-2';
-import * as components from '../components.js?v=20260612-2';
+import { api } from '../api.js?v=20260612-14';
+import { initLayout } from '../layout.js?v=20260612-14';
+import * as components from '../components.js?v=20260612-14';
 
 export async function renderCatalog() {
   const layout = await initLayout({ screenCode: 'catalog', pageTitle: 'Catálogo de Productos' });
@@ -12,6 +12,7 @@ export async function renderCatalog() {
 
   // Estado de filtros
   let currentFilters = {};
+  let searchTerm = '';
   let allProducts = [];
   let filteredProducts = [];
 
@@ -30,6 +31,15 @@ export async function renderCatalog() {
 
       <!-- Grid de productos -->
       <div class="col-md-9">
+        <!-- Buscador por ID o descripción -->
+        <div class="mb-3">
+          <div class="input-group">
+            <span class="input-group-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg></span>
+            <input type="text" id="search-input" class="form-control" placeholder="Buscar por ID o descripción..." autocomplete="off">
+            <button class="btn btn-outline-secondary" id="clear-search-btn" type="button" title="Limpiar búsqueda">&times;</button>
+          </div>
+        </div>
+
         <div class="mb-3 d-flex justify-content-between align-items-center">
           <h5>Resultados: <span id="result-count">0</span> productos</h5>
           <div class="d-flex gap-2">
@@ -51,8 +61,18 @@ export async function renderCatalog() {
   // Función para cargar y mostrar productos
   async function loadAndRenderProducts() {
     allProducts = api.getPublishedProducts();
-    filteredProducts = api.filterProducts(currentFilters);
-    
+    let byFilters = api.filterProducts(currentFilters);
+
+    // Aplicar búsqueda por ID o nombre
+    const term = searchTerm.trim().toLowerCase();
+    if (term !== '') {
+      byFilters = byFilters.filter(p =>
+        (p.id  && p.id.toString().toLowerCase().includes(term)) ||
+        (p.name && p.name.toLowerCase().includes(term))
+      );
+    }
+
+    filteredProducts = byFilters;
     renderProducts();
     updateResultCount();
   }
@@ -168,6 +188,14 @@ export async function renderCatalog() {
     loadAndRenderProducts();
   }
 
+  // Función para limpiar búsqueda
+  function clearSearch() {
+    searchTerm = '';
+    const input = document.getElementById('search-input');
+    if (input) input.value = '';
+    loadAndRenderProducts();
+  }
+
   // Navegar a detalle
   function navigateToDetail(productId) {
     window.location.hash = `#/detail/${productId}`;
@@ -175,6 +203,13 @@ export async function renderCatalog() {
 
   // Event listener: Limpiar filtros
   document.getElementById('clear-filters-btn').addEventListener('click', clearFilters);
+
+  // Event listeners: Buscador
+  document.getElementById('search-input').addEventListener('input', (e) => {
+    searchTerm = e.target.value;
+    loadAndRenderProducts();
+  });
+  document.getElementById('clear-search-btn').addEventListener('click', clearSearch);
 
   // Iniciar carga
   renderFilters();

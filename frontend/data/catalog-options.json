@@ -20,5 +20,120 @@
     { "value": "Vaso", "label": "Vaso" },
     { "value": "Botella", "label": "Botella" },
     { "value": "Set", "label": "Set" }
+  ],
+  "shapes": [
+    { "value": "Cilindro", "label": "Cilindro" },
+    { "value": "Cubo", "label": "Cubo" },
+    { "value": "Esfera", "label": "Esfera" },
+    { "value": "Cono", "label": "Cono" },
+    { "value": "Prisma", "label": "Prisma" },
+    { "value": "Oval", "label": "Oval" }
+  ],
+  "dimensionUnits": [
+    { "value": "mm", "label": "Milímetros (mm)" },
+    { "value": "cm", "label": "Centímetros (cm)" },
+    { "value": "m", "label": "Metros (m)" },
+    { "value": "in", "label": "Pulgadas (in)" },
+    { "value": "ft", "label": "Pies (ft)" }
+  ],
+  "weightUnits": [
+    { "value": "g", "label": "Gramos (g)" },
+    { "value": "kg", "label": "Kilogramos (kg)" },
+    { "value": "mg", "label": "Miligramos (mg)" },
+    { "value": "oz", "label": "Onzas (oz)" },
+    { "value": "lb", "label": "Libras (lb)" }
+  ],
+  "categories": [
+    {
+      "id": "cat-0-001",
+      "code": "bebidas",
+      "label": "Bebidas",
+      "level": 0,
+      "description": "Categoría de bebidas",
+      "longDescription": "Incluye todas las bebidas disponibles",
+      "externalCode": "BEV001",
+      "order": 1,
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Bebidas",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Bebidas",
+      "parentIds": []
+    },
+    {
+      "id": "cat-1-001",
+      "code": "bebidas-calientes",
+      "label": "Bebidas Calientes",
+      "level": 1,
+      "description": "Bebidas calientes variadas",
+      "longDescription": "Café, té y otras bebidas calientes",
+      "externalCode": "HOT001",
+      "order": 1,
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Calientes",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Calientes",
+      "parentIds": ["cat-0-001"]
+    },
+    {
+      "id": "cat-2-001",
+      "code": "cafe",
+      "label": "Café",
+      "level": 2,
+      "description": "Café premium",
+      "longDescription": "Café tostado y molido para todas las ocasiones",
+      "externalCode": "COFFEE001",
+      "order": 1,
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Cafe",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Cafe",
+      "parentIds": ["cat-1-001"]
+    },
+    {
+      "id": "cat-1-002",
+      "code": "bebidas-frias",
+      "label": "Bebidas Frías",
+      "level": 1,
+      "description": "Bebidas frías y refrescantes",
+      "longDescription": "Zumos, refrescos y bebidas heladas",
+      "externalCode": "COLD001",
+      "order": 2,
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Frias",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Frias",
+      "parentIds": ["cat-0-001"]
+    },
+    {
+      "id": "cat-2-002",
+      "code": "zumos",
+      "label": "Zumos",
+      "level": 2,
+      "description": "Zumos naturales",
+      "longDescription": "Zumos frescos de frutas variadas",
+      "externalCode": "JUICE001",
+      "order": 1,
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Zumos",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Zumos",
+      "parentIds": ["cat-1-002"]
+    },
+    {
+      "id": "cat-0-002",
+      "code": "oficina",
+      "label": "Oficina",
+      "level": 0,
+      "description": "Productos para oficina",
+      "longDescription": "Accesorios y artículos para ambientes laborales",
+      "externalCode": "OFF001",
+      "order": 2,
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Oficina",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Oficina",
+      "parentIds": []
+    },
+    {
+      "id": "cat-1-003",
+      "code": "desk-accessories",
+      "label": "Accesorios de Escritorio",
+      "level": 1,
+      "description": "Accesorios para escritorio",
+      "longDescription": "Organizadores, porta lapiceros y más",
+      "externalCode": "DESK001",
+      "order": 1,
+      "mainImageUrl": "https://via.placeholder.com/400x300?text=Escritorio",
+      "mobileImageUrl": "https://via.placeholder.com/200x150?text=Escritorio",
+      "parentIds": ["cat-0-002"]
+    }
   ]
 }

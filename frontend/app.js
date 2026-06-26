@@ -2,10 +2,13 @@
  * app.js - Router y orquestación principal de la SPA
  */
 
-import { api } from './api.js?v=20260612-6';
-import { renderCatalog } from './screens/catalog.js?v=20260612-6';
-import { renderDetail } from './screens/detail.js?v=20260612-6';
-import { renderAdmin } from './screens/admin.js?v=20260612-6';
+import { api } from './api.js?v=20260612-14';
+import { renderCatalog } from './screens/catalog.js?v=20260612-14';
+import { renderDetail } from './screens/detail.js?v=20260612-14';
+import { renderAdmin } from './screens/admin.js?v=20260612-14';
+import { renderCreateProduct } from './screens/create-product.js?v=20260612-14';
+import { renderAttributes } from './screens/attributes.js?v=20260612-14';
+import { renderCategories } from './screens/categories.js?v=20260612-14';
 
 // Estado global
 let isInitialized = false;
@@ -40,6 +43,15 @@ async function renderScreen() {
       case 'admin':
         await renderAdmin(param);
         break;
+      case 'create-product':
+        await renderCreateProduct();
+        break;
+      case 'attributes':
+        await renderAttributes();
+        break;
+      case 'categories':
+        await renderCategories();
+        break;
       default:
         // Redirigir a catalog
         window.location.hash = '#/catalog';
@@ -65,23 +77,32 @@ async function initApp() {
   if (isInitialized) return;
 
   try {
+    console.log('🔄 Inicializando app...');
+    
     // Cargar datos
+    console.log('📦 Cargando datos...');
     await api.initialize();
+    console.log('✅ Datos cargados');
+    
     isInitialized = true;
 
     // Renderizar pantalla inicial
+    console.log('🎨 Renderizando pantalla...');
     await renderScreen();
+    console.log('✅ Pantalla renderizada');
 
     // Escuchar cambios de ruta
     window.addEventListener('hashchange', renderScreen);
+    console.log('✅ App lista');
   } catch (error) {
-    console.error('Failed to initialize app:', error);
+    console.error('❌ Error inicializando app:', error);
     document.body.innerHTML = `
       <div class="container mt-5">
         <div class="alert alert-danger" role="alert">
           <h4>Error al inicializar la aplicación</h4>
-          <p>${error.message}</p>
-          <p>Asegúrate de que los archivos de datos están en la carpeta frontend/data/</p>
+          <p><strong>${error.message}</strong></p>
+          <pre>${error.stack}</pre>
+          <p>Revisa la consola del navegador (F12) para más detalles.</p>
         </div>
       </div>
     `;
@@ -89,9 +110,6 @@ async function initApp() {
 }
 
 // Iniciar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', initApp);
-
-// Si el DOM ya está listo (en algunas circunstancias)
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initApp);
 } else {

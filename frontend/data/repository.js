@@ -15,9 +15,9 @@ let cachedState = null;
 async function loadSeedData() {
   try {
     const [skusRes, productsRes, optionsRes] = await Promise.all([
-      fetch('./frontend/data/skus.json'),
-      fetch('./frontend/data/product-masters.json'),
-      fetch('./frontend/data/catalog-options.json')
+      fetch('/frontend/data/skus.json'),
+      fetch('/frontend/data/product-masters.json'),
+      fetch('/frontend/data/catalog-options.json')
     ]);
 
     if (!skusRes.ok || !productsRes.ok || !optionsRes.ok) {
@@ -39,13 +39,30 @@ async function loadSeedData() {
  * Inicializa el estado desde localStorage o desde seed
  */
 export async function initializeRepository() {
+  // Cargar siempre los datos seed (para tener los atributos más actualizados)
+  const seedData = await loadSeedData();
+
   // Verificar si hay datos persistidos
   const stored = localStorage.getItem(STORAGE_KEY);
   
   if (stored) {
     try {
-      cachedState = JSON.parse(stored);
-      console.log('Loaded state from localStorage');
+      const storedState = JSON.parse(stored);
+      
+      // Hacer merge: usar datos guardados pero actualizar catalogOptions con los nuevos atributos
+      cachedState = {
+        version: SCHEMA_VERSION,
+        skus: storedState.skus || seedData.skus,
+        products: storedState.products || seedData.products,
+        catalogOptions: {
+          ...storedState.catalogOptions,
+          ...seedData.options  // Merge: nuevos atributos sobrescriben los antiguos
+        },
+        lastUpdated: new Date().toISOString()
+      };
+      
+      console.log('Loaded state from localStorage with updated catalog options');
+      saveState();
       return cachedState;
     } catch (e) {
       console.warn('Failed to parse stored state, loading seed data instead');
@@ -53,8 +70,6 @@ export async function initializeRepository() {
   }
 
   // Cargar desde seed
-  const seedData = await loadSeedData();
-  
   cachedState = {
     version: SCHEMA_VERSION,
     skus: seedData.skus,
@@ -153,6 +168,235 @@ export function createProduct(productData) {
  */
 export function getCatalogOptions() {
   return getState().catalogOptions;
+}
+
+/**
+ * Agrega una nueva opción a un atributo
+ */
+export function addAttributeOption(attributeName, optionData) {
+  const options = getState().catalogOptions;
+  
+  if (!options[attributeName]) {
+    throw new Error(`Atributo ${attributeName} no existe`);
+  }
+
+  const newOption = {
+    value: optionData.value,
+    label: optionData.label || optionData.value
+  };
+
+  // Evitar duplicados
+  if (options[attributeName].some(opt => opt.value === newOption.value)) {
+    throw new Error(`Opción ${newOption.value} ya existe`);
+  }
+
+  options[attributeName].push(newOption);
+  saveState();
+  
+  return newOption;
+}
+
+/**
+ * Actualiza una opción de atributo
+ */
+export function updateAttributeOption(attributeName, oldValue, newOptionData) {
+  const options = getState().catalogOptions;
+  
+  if (!options[attributeName]) {
+    throw new Error(`Atributo ${attributeName} no existe`);
+  }
+
+  const idx = options[attributeName].findIndex(opt => opt.value === oldValue);
+  if (idx === -1) {
+    throw new Error(`Opción ${oldValue} no encontrada`);
+  }
+
+  options[attributeName][idx] = {
+    value: newOptionData.value,
+    label: newOptionData.label || newOptionData.value
+  };
+  
+  saveState();
+  return options[attributeName][idx];
+}
+
+/**
+ * Elimina una opción de atributo
+ */
+export function deleteAttributeOption(attributeName, value) {
+  const options = getState().catalogOptions;
+  
+  if (!options[attributeName]) {
+    throw new Error(`Atributo ${attributeName} no existe`);
+  }
+
+  const idx = options[attributeName].findIndex(opt => opt.value === value);
+  if (idx === -1) {
+    throw new Error(`Opción ${value} no encontrada`);
+  }
+
+  options[attributeName].splice(idx, 1);
+  saveState();
+}
+
+/**
+ * Obtiene todas las categorías (array plano)
+ */
+export function getAllCategories() {
+  const options = getState().catalogOptions;
+  return options.categories || [];
+}
+
+/**
+ * Obtiene categorías raíz (nivel 0)
+ */
+export function getRootCategories() {
+  const all = getAllCategories();
+  return all.filter(cat => cat.level === 0).sort((a, b) => (a.order || 0) - (b.order || 0));
+}
+
+/**
+ * Obtiene una categoría por ID
+ */
+export function getCategoryById(categoryId) {
+  const all = getAllCategories();
+  return all.find(cat => cat.id === categoryId);
+}
+
+/**
+ * Obtiene categorías hijas (relacionadas como padre)
+ */
+export function getChildCategories(parentId, level) {
+  const all = getAllCategories();
+  // Si se especifica nivel, devolver categorías de ese nivel que tengan parentId como padre
+  if (level !== undefined) {
+    return all.filter(cat => 
+      cat.level === level && 
+      cat.parentIds && 
+      cat.parentIds.includes(parentId)
+    ).sort((a, b) => (a.order || 0) - (b.order || 0));
+  }
+  // Si no, devolver todas las categorías que tengan parentId como padre (siguiente nivel)
+  return all.filter(cat => 
+    cat.parentIds && 
+    cat.parentIds.includes(parentId)
+  ).sort((a, b) => (a.order || 0) - (b.order || 0));
+}
+
+/**
+ * Obtiene categorías padres de una categoría
+ */
+export function getParentCategories(categoryId) {
+  const all = getAllCategories();
+  const category = all.find(cat => cat.id === categoryId);
+  if (!category || !category.parentIds) return [];
+  return all.filter(cat => category.parentIds.includes(cat.id))
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+}
+
+/**
+ * Agrega una nueva categoría
+ */
+export function addCategory(categoryData) {
+  const options = getState().catalogOptions;
+  if (!options.categories) {
+    options.categories = [];
+  }
+
+  const newCategory = {
+    id: `cat-${categoryData.level}-${Date.now()}`,
+    code: categoryData.code || '',
+    label: categoryData.label || '',
+    level: categoryData.level || 0,
+    description: categoryData.description || '',
+    longDescription: categoryData.longDescription || '',
+    externalCode: categoryData.externalCode || '',
+    order: categoryData.order || 0,
+    mainImageUrl: categoryData.mainImageUrl || '',
+    mobileImageUrl: categoryData.mobileImageUrl || '',
+    parentIds: categoryData.parentIds || []
+  };
+
+  options.categories.push(newCategory);
+  saveState();
+  return newCategory;
+}
+
+/**
+ * Actualiza una categoría
+ */
+export function updateCategory(categoryId, updates) {
+  const options = getState().catalogOptions;
+  const all = options.categories || [];
+  
+  const idx = all.findIndex(cat => cat.id === categoryId);
+  if (idx === -1) {
+    throw new Error(`Categoría ${categoryId} no encontrada`);
+  }
+  
+  all[idx] = { ...all[idx], ...updates };
+  saveState();
+  return all[idx];
+}
+
+/**
+ * Elimina una categoría y ajusta sus referencias
+ */
+export function deleteCategory(categoryId) {
+  const options = getState().catalogOptions;
+  const all = options.categories || [];
+  
+  const idx = all.findIndex(cat => cat.id === categoryId);
+  if (idx === -1) {
+    throw new Error(`Categoría ${categoryId} no encontrada`);
+  }
+  
+  // Remover de parentIds en otras categorías
+  for (const cat of all) {
+    if (cat.parentIds) {
+      cat.parentIds = cat.parentIds.filter(pid => pid !== categoryId);
+    }
+  }
+  
+  // Eliminar la categoría
+  all.splice(idx, 1);
+  saveState();
+}
+
+/**
+ * Agrega una relación padre-hijo (para categorías con relaciones muchos a muchos)
+ */
+export function addCategoryParent(categoryId, parentId) {
+  const options = getState().catalogOptions;
+  const all = options.categories || [];
+  
+  const category = all.find(cat => cat.id === categoryId);
+  if (!category) {
+    throw new Error(`Categoría ${categoryId} no encontrada`);
+  }
+  
+  if (!category.parentIds) category.parentIds = [];
+  if (!category.parentIds.includes(parentId)) {
+    category.parentIds.push(parentId);
+  }
+  
+  saveState();
+}
+
+/**
+ * Remueve una relación padre-hijo
+ */
+export function removeCategoryParent(categoryId, parentId) {
+  const options = getState().catalogOptions;
+  const all = options.categories || [];
+  
+  const category = all.find(cat => cat.id === categoryId);
+  if (!category || !category.parentIds) {
+    return;
+  }
+  
+  category.parentIds = category.parentIds.filter(pid => pid !== parentId);
+  saveState();
 }
 
 /**
