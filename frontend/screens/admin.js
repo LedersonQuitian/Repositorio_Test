@@ -69,7 +69,7 @@ export async function renderAdmin(productId = null) {
             <form id="admin-form" class="row g-3">
               <div class="col-md-8">
                 <label class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="f-name" disabled>
+                <input type="text" class="form-control" id="f-name" required>
               </div>
               <div class="col-md-4">
                 <label class="form-label">ID</label>
@@ -305,6 +305,7 @@ export async function renderAdmin(productId = null) {
     clearAlert();
     try {
       const payload = {
+        name: nameEl.value.trim(),
         categoryId: categoryLevel2El.value || categoryLevel1El.value || categoryLevel0El.value || null,
         description: descriptionEl.value.trim(),
         managedAttributes: {
