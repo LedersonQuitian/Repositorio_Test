@@ -6,6 +6,7 @@
 
 const STORAGE_KEY = 'product-master-prototype:state';
 const SCHEMA_VERSION = '1.0';
+console.log('aqui estuvo Sebastián');
 
 let cachedState = null;
 
