@@ -4,9 +4,9 @@
  * Permite editar atributos de productos ya creados (sin crear nuevos)
  */
 
-import { api } from '../api.js?v=20260612-14';
-import { initLayout } from '../layout.js?v=20260612-14';
-import * as derive from '../domain/derive.js?v=20260612-14';
+import { api } from '../api.js?v=20260612-17';
+import { initLayout } from '../layout.js?v=20260612-17';
+import * as derive from '../domain/derive.js?v=20260612-17';
 
 function renderSelectOptions(options = []) {
   const optionHtml = options.map(option => `<option value="${option.value}">${option.label}</option>`).join('');

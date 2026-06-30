@@ -5,10 +5,10 @@
  * Nunca se accede directamente a repository desde las pantallas.
  */
 
-import * as repo from './data/repository.js?v=20260612-14';
-import * as derive from './domain/derive.js?v=20260612-14';
-import * as filters from './domain/filters.js?v=20260612-14';
-import * as rules from './domain/rules.js?v=20260612-14';
+import * as repo from './data/repository.js?v=20260612-17';
+import * as derive from './domain/derive.js?v=20260612-17';
+import * as filters from './domain/filters.js?v=20260612-17';
+import * as rules from './domain/rules.js?v=20260612-17';
 
 function normalizeSkuIds(skuIds = []) {
   if (!Array.isArray(skuIds)) {
@@ -109,6 +109,27 @@ export const api = {
    */
   getSkus: () => {
     return repo.getSkus();
+  },
+
+  /**
+   * Obtiene un SKU por ID
+   */
+  getSkuById: (skuId) => {
+    return repo.getSkuById(skuId);
+  },
+
+  /**
+   * Obtiene un SKU por código
+   */
+  getSkuByCode: (code) => {
+    return repo.getSkuByCode(code);
+  },
+
+  /**
+   * Actualiza los atributos de un SKU
+   */
+  updateSkuAttributes: (skuId, attributeUpdates) => {
+    return repo.updateSkuAttributes(skuId, attributeUpdates);
   },
 
   /**

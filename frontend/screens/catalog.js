@@ -2,9 +2,9 @@
  * screens/catalog.js - Pantalla de catálogo filtrable
  */
 
-import { api } from '../api.js?v=20260612-14';
-import { initLayout } from '../layout.js?v=20260612-14';
-import * as components from '../components.js?v=20260612-14';
+import { api } from '../api.js?v=20260612-17';
+import { initLayout } from '../layout.js?v=20260612-17';
+import * as components from '../components.js?v=20260612-17';
 
 export async function renderCatalog() {
   const layout = await initLayout({ screenCode: 'catalog', pageTitle: 'Catálogo de Productos' });

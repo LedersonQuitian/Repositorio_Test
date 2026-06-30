@@ -49,6 +49,9 @@ export async function initLayout(options = {}) {
               <a class="nav-link ${screenCode === 'attributes' ? 'active' : ''}" href="#/attributes">
                 Admin. de Atributos
               </a>
+              <a class="nav-link ${screenCode === 'sku-attributes' ? 'active' : ''}" href="#/sku-attributes">
+                Atributos de SKUs
+              </a>
             ` : ''}
             <hr class="my-2 border-secondary">
             <small class="text-muted d-block mb-2">Estado:</small>
@@ -118,7 +121,7 @@ export async function initLayout(options = {}) {
   // Setup reset button
   document.getElementById('reset-seed-btn').addEventListener('click', async () => {
     if (confirm('¿Restaurar datos a ejemplo original?')) {
-      const { api } = await import('./api.js?v=20260612-14');
+      const { api } = await import('./api.js?v=20260612-17');
       await api.resetToSeed();
       alert('Datos restaurados. Recargando...');
       window.location.reload();

@@ -5,8 +5,8 @@
  * (materiales, sectores, aplicaciones, tipos de productos)
  */
 
-import { api } from '../api.js?v=20260612-14';
-import { initLayout } from '../layout.js?v=20260612-14';
+import { api } from '../api.js?v=20260612-17';
+import { initLayout } from '../layout.js?v=20260612-17';
 
 const ATTRIBUTES = {
   materials: { label: 'Materiales', key: 'materials' },

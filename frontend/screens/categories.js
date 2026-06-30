@@ -2,8 +2,8 @@
  * screens/categories.js - Administración de Categorías (v11)
  */
 
-import { api } from '../api.js?v=20260612-14';
-import { initLayout } from '../layout.js?v=20260612-14';
+import { api } from '../api.js?v=20260612-17';
+import { initLayout } from '../layout.js?v=20260612-17';
 
 export async function renderCategories() {
   const layout = await initLayout({ screenCode: 'categories', pageTitle: 'Administración de Categorías' });

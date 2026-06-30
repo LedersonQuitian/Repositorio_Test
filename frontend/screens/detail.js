@@ -2,9 +2,9 @@
  * screens/detail.js - Pantalla de detalle de ProductMaster
  */
 
-import { api } from '../api.js?v=20260612-14';
-import { initLayout } from '../layout.js?v=20260612-14';
-import * as components from '../components.js?v=20260612-14';
+import { api } from '../api.js?v=20260612-17';
+import { initLayout } from '../layout.js?v=20260612-17';
+import * as components from '../components.js?v=20260612-17';
 
 export async function renderDetail(productId = null) {
   const layout = await initLayout({ screenCode: 'detail', pageTitle: 'Detalle del Producto' });

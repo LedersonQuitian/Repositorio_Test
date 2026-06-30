@@ -113,6 +113,40 @@ export function getSkus() {
 }
 
 /**
+ * Obtiene un SKU por ID
+ */
+export function getSkuById(id) {
+  return getSkus().find(sku => sku.id === id);
+}
+
+/**
+ * Obtiene un SKU por código
+ */
+export function getSkuByCode(code) {
+  return getSkus().find(sku => sku.code === code);
+}
+
+/**
+ * Actualiza los atributos de un SKU
+ */
+export function updateSkuAttributes(skuId, attributeUpdates) {
+  const skus = getSkus();
+  const sku = skus.find(s => s.id === skuId);
+  
+  if (!sku) {
+    throw new Error(`SKU ${skuId} not found`);
+  }
+  
+  sku.attributes = {
+    ...sku.attributes,
+    ...attributeUpdates
+  };
+  
+  saveState();
+  return sku;
+}
+
+/**
  * Obtiene todos los ProductMasters
  */
 export function getProducts() {

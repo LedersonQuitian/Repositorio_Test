@@ -2,13 +2,14 @@
  * app.js - Router y orquestación principal de la SPA
  */
 
-import { api } from './api.js?v=20260612-14';
-import { renderCatalog } from './screens/catalog.js?v=20260612-14';
-import { renderDetail } from './screens/detail.js?v=20260612-14';
-import { renderAdmin } from './screens/admin.js?v=20260612-14';
-import { renderCreateProduct } from './screens/create-product.js?v=20260612-14';
-import { renderAttributes } from './screens/attributes.js?v=20260612-14';
-import { renderCategories } from './screens/categories.js?v=20260612-14';
+import { api } from './api.js?v=20260612-17';
+import { renderCatalog } from './screens/catalog.js?v=20260612-17';
+import { renderDetail } from './screens/detail.js?v=20260612-17';
+import { renderAdmin } from './screens/admin.js?v=20260612-17';
+import { renderCreateProduct } from './screens/create-product.js?v=20260612-17';
+import { renderAttributes } from './screens/attributes.js?v=20260612-17';
+import { renderCategories } from './screens/categories.js?v=20260612-17';
+import { renderSkuAttributes } from './screens/sku-attributes.js?v=20260612-17';
 
 // Estado global
 let isInitialized = false;
@@ -51,6 +52,9 @@ async function renderScreen() {
         break;
       case 'categories':
         await renderCategories();
+        break;
+      case 'sku-attributes':
+        await renderSkuAttributes();
         break;
       default:
         // Redirigir a catalog
